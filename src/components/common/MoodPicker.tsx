@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useUserStore } from "@/stores/useUserStore";
+import { useMoodDiaryStore } from "@/stores/useMoodDiaryStore";
 
-const MOODS = [
+export const MOODS = [
   { emoji: "😊", label: "开心", color: "bg-wheat-100 hover:bg-wheat-200 border-wheat-300" },
   { emoji: "😌", label: "平静", color: "bg-sky-100 hover:bg-sky-200 border-sky-300" },
   { emoji: "😢", label: "想爸妈", color: "bg-warm-100 hover:bg-warm-200 border-warm-300" },
@@ -9,17 +10,33 @@ const MOODS = [
   { emoji: "😡", label: "生气", color: "bg-red-100 hover:bg-red-200 border-red-300" },
 ];
 
+export function getMoodEmoji(label: string): string {
+  const mood = MOODS.find((m) => m.label === label);
+  return mood?.emoji ?? "😐";
+}
+
+export function getMoodColor(label: string): string {
+  const mood = MOODS.find((m) => m.label === label);
+  return mood?.color ?? "bg-gray-100 border-gray-300";
+}
+
 interface MoodPickerProps {
   onSelect?: (mood: string) => void;
 }
 
 export default function MoodPicker({ onSelect }: MoodPickerProps) {
   const { mood, setMood } = useUserStore();
+  const { addMoodRecord } = useMoodDiaryStore();
   const [selectedMood, setSelectedMood] = useState<string | null>(mood);
+
+  useEffect(() => {
+    setSelectedMood(mood);
+  }, [mood]);
 
   const handleSelect = (emoji: string, label: string) => {
     setSelectedMood(label);
     setMood(label);
+    addMoodRecord(label, emoji);
     onSelect?.(label);
   };
 

@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import { Bird, Sprout, Shield, Compass, Sparkles, Flame, Gift } from "lucide-react";
+import { Bird, Sprout, Shield, Compass, Sparkles, Flame, Gift, BookHeart, ChevronRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import GooseMascot from "@/components/common/GooseMascot";
 import MoodPicker from "@/components/common/MoodPicker";
 import FeatureCard from "@/components/common/FeatureCard";
 import { useUserStore } from "@/stores/useUserStore";
+import { useMoodDiaryStore } from "@/stores/useMoodDiaryStore";
 
 const GREETINGS = [
   "早上好呀，今天也要开心哦！",
@@ -15,6 +17,7 @@ const GREETINGS = [
 
 export default function Home() {
   const { streakDays, checkIn, lastSignDate, addCoins } = useUserStore();
+  const { records } = useMoodDiaryStore();
   const [greeting] = useState(
     () => GREETINGS[Math.floor(Math.random() * GREETINGS.length)]
   );
@@ -130,6 +133,28 @@ export default function Home() {
         {/* 心情选择 */}
         <div className="bg-white/60 backdrop-blur-sm rounded-3xl p-5 sm:p-6 shadow-soft max-w-lg mx-auto">
           <MoodPicker />
+          <Link
+            to="/mood-diary"
+            className="mt-5 flex items-center justify-between gap-3 p-4 rounded-2xl bg-gradient-to-r from-warm-50 to-wheat-50 border border-warm-200/50 hover:from-warm-100 hover:to-wheat-100 transition-all btn-bounce group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-warm-100 flex items-center justify-center text-warm-600 group-hover:bg-warm-200 transition-colors">
+                <BookHeart size={22} />
+              </div>
+              <div className="text-left">
+                <div className="font-medium text-gray-800">心情日记</div>
+                <div className="text-xs text-gray-500">
+                  {records.length > 0
+                    ? `已有 ${records.length} 条心情记录`
+                    : "翻开小日记，回顾心情变化～"}
+                </div>
+              </div>
+            </div>
+            <ChevronRight
+              size={20}
+              className="text-gray-400 group-hover:text-warm-500 group-hover:translate-x-1 transition-all"
+            />
+          </Link>
         </div>
       </section>
 

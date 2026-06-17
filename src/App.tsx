@@ -6,6 +6,7 @@ import Messenger from "@/pages/Messenger";
 import Farm from "@/pages/Farm";
 import Safety from "@/pages/Safety";
 import Explore from "@/pages/Explore";
+import MoodDiary from "@/pages/MoodDiary";
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
             <Route path="/farm" element={<Farm />} />
             <Route path="/safety" element={<Safety />} />
             <Route path="/explore" element={<Explore />} />
+            <Route path="/mood-diary" element={<MoodDiary />} />
           </Routes>
         </main>
         <BottomNav />
