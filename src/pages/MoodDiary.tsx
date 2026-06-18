@@ -1,10 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Calendar,
   Trash2,
   ChevronLeft,
-  ChevronRight,
-  X,
   AlertTriangle,
   Heart,
   Sparkles,
@@ -37,7 +35,6 @@ function getMonthDates(): Date[] {
   const year = now.getFullYear();
   const month = now.getMonth();
   const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
   const startDayOfWeek = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
   const dates: Date[] = [];
   const gridStart = new Date(firstDay);
@@ -74,10 +71,31 @@ interface DeleteConfirmModalProps {
 }
 
 function DeleteConfirmModal({ record, onCancel, onConfirm }: DeleteConfirmModalProps) {
+  useEffect(() => {
+    if (!record) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onCancel();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [record, onCancel]);
+
   if (!record) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-3xl shadow-card max-w-sm w-full p-6 animate-fade-in-up">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+      onClick={onCancel}
+    >
+      <div
+        className="bg-white rounded-3xl shadow-card max-w-sm w-full p-6 animate-fade-in-up"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex justify-center mb-4">
           <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
             <AlertTriangle size={32} className="text-red-500" />
@@ -295,8 +313,9 @@ function MoodTimeline({ records, onDelete }: MoodTimelineProps) {
                   </div>
                   <button
                     onClick={() => onDelete(record)}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity p-2 rounded-xl hover:bg-red-100 text-gray-400 hover:text-red-500 flex-shrink-0"
+                    className="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity p-2 rounded-xl hover:bg-red-100 active:bg-red-200 text-gray-400 hover:text-red-500 flex-shrink-0"
                     title="删除这条心情"
+                    aria-label="删除这条心情"
                   >
                     <Trash2 size={18} />
                   </button>
@@ -316,7 +335,7 @@ export default function MoodDiary() {
     useMoodDiaryStore();
   const [deleteTarget, setDeleteTarget] = useState<MoodRecord | null>(null);
 
-  const recordsInRange = useMemo(() => getRecordsInRange(), [records, viewRange, getRecordsInRange]);
+  const recordsInRange = useMemo(() => getRecordsInRange(), [getRecordsInRange]);
 
   const stats = useMemo(() => {
     const total = recordsInRange.length;

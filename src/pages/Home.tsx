@@ -16,7 +16,7 @@ const GREETINGS = [
 ];
 
 export default function Home() {
-  const { streakDays, checkIn, lastSignDate, addCoins } = useUserStore();
+  const { streakDays, checkIn, lastSignDate } = useUserStore();
   const { records } = useMoodDiaryStore();
   const [greeting] = useState(
     () => GREETINGS[Math.floor(Math.random() * GREETINGS.length)]
